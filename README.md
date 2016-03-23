@@ -5,5 +5,6 @@ This project is a system to run a hexacopter that tracks a human head and follow
 ## Requirements:
 - Django framework
 - openCV 2.4
+- memcached
 - Arduino IDE
-- Python modules: requests, netifaces, serial
+- Python modules: requests, python-memcached, netifaces, serial, json

@@ -149,8 +149,6 @@ void setup()
   
   I2C_Init();
 
-  Serial.println("Pololu MinIMU-9 + Arduino AHRS");
-
   digitalWrite(STATUS_LED,LOW);
   delay(1500);
  
@@ -173,10 +171,6 @@ void setup()
     AN_OFFSET[y] = AN_OFFSET[y]/32;
     
   AN_OFFSET[5]-=GRAVITY*SENSOR_SIGN[5];
-  
-  //Serial.println("Offset:");
-  for(int y=0; y<6; y++)
-    Serial.println(AN_OFFSET[y]);
   
   delay(2000);
   digitalWrite(STATUS_LED,HIGH);

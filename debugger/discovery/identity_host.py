@@ -24,6 +24,7 @@ try:
 except:
   WriteIdentity()
 
+discovery.find_hosts()
 print ("Hosting on %s:%d" % (discovery.HOSTS, discovery.PORT))
 print ("description: %s" % (mydesc))
 

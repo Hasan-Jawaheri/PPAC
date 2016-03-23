@@ -2,10 +2,11 @@ import serial
 import time
 import requests
 import netifaces
+import json
 
 DEBUGGER_IP = '172.20.62.164'
 DEBUGGER_PORT = 8000
-DEBUGGER_LINK = 'setinfo'
+DEBUGGER_LINK = 'setinfo/'
 
 IP_PREFIXES = ['192.168.', '172.20', '10.10.']
 
@@ -16,8 +17,9 @@ for i in netifaces.interfaces():
       if pre in ip:
         DEBUGGER_IP = ip
         break
+  except: pass
 
-DEBUGGER_URL = 'http://'+DEBUGGER_IP+':'+str(DEBUGGER_PORT)+'/debug/' + DEBUGGER_LINK
+DEBUGGER_URL = 'http://'+DEBUGGER_IP+':'+str(DEBUGGER_PORT)+'/debug/'+DEBUGGER_LINK
 
 sp = None
 serial_types = ["COM", "/dev/ttyUSB", "/dev/ttyACM", "/dev/cu.usbmodem141"]
@@ -64,13 +66,9 @@ while True:
               info = info.split(',')
               if len(info) == 9:
                 mtx = [[float(info[0]), float(info[3]), float(info[6])],[float(info[1]), float(info[4]), float(info[7])],[float(info[2]), float(info[5]), float(info[8])]]
-                print ([float(info[0]), float(info[3]), float(info[6])])
-                print ([float(info[1]), float(info[4]), float(info[7])])
-                print ([float(info[2]), float(info[5]), float(info[8])])
-                print ("")
                 try:
                   # send debugging info to debugger
-                  requests.post(DEBUGGER_URL, data = {'matrix':mtx})
+                  requests.post(DEBUGGER_URL, data = {'matrix':json.dumps(mtx)})
                 except Exception as e:
                   print str(e)
             sp_buffer = sp_buffer[i+1:]
