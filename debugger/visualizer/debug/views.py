@@ -5,7 +5,7 @@ from django.core.cache import cache
 import json
 
 def index(request):
-  return HttpResponse(render('/debug/index.html'))
+  return HttpResponse(render(request, 'debug/index.html'))
 
 def getinfo(request):
   try:
