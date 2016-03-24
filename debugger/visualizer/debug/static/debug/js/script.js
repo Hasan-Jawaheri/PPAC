@@ -1,3 +1,5 @@
+
+
 $(document).ready(function() {
   var updater = function() {
     $.get("/debug/getinfo/", {}, function(data) {

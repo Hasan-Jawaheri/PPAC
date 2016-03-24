@@ -17,10 +17,8 @@ def getinfo(request):
 def setinfo(request):
   mtx = json.loads(request.POST["matrix"])
   try:
-    print ("setting")
     cache.set('mtx', mtx)
   except:
-    print ("adding")
     cache.add('mtx', mtx)
 
   return HttpResponse("ok")

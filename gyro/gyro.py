@@ -1,25 +1,38 @@
 import serial
 import time
 import requests
-import netifaces
 import json
+import sys
+
+import socket
+import traceback
+import netifaces
+
+sys.path.insert(0, '../debugger/discovery/')
+import discovery
 
 DEBUGGER_IP = '172.20.62.164'
 DEBUGGER_PORT = 8000
 DEBUGGER_LINK = 'setinfo/'
 
-IP_PREFIXES = ['192.168.', '172.20', '10.10.']
+def cb_identifier(source, type, size, text):
+  DEBUGGER_IP = str(source)
+discovery.SetCallback([2, 3, 4, 5], cb_identifier)
 
-for i in netifaces.interfaces():
+while 1:
   try:
-    ip = netifaces.ifaddresses(i)[netifaces.AF_INET][0]['addr']
-    for pre in IP_PREFIXES:
-      if pre in ip:
-        DEBUGGER_IP = ip
-        break
-  except: pass
+    s = discovery.OpenBroadcastSocket()
+    s.sendto(discovery.MakePacket(0, ""), discovery.GetBroadcastAddress())
+    message, address = s.recvfrom(100)
+    discovery.OnInput(message, address)
+    s.close()
+    if DEBUGGER_IP:
+      break
+  except Exception as e:
+    print str(e)
 
 DEBUGGER_URL = 'http://'+DEBUGGER_IP+':'+str(DEBUGGER_PORT)+'/debug/'+DEBUGGER_LINK
+print ("Debugger link: " + DEBUGGER_URL)
 
 sp = None
 serial_types = ["COM", "/dev/ttyUSB", "/dev/ttyACM", "/dev/cu.usbmodem141"]
