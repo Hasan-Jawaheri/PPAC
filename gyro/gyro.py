@@ -11,9 +11,11 @@ import netifaces
 sys.path.insert(0, '../debugger/discovery/')
 import discovery
 
-DEBUGGER_IP = '172.20.62.164'
+DEBUGGER_IP = '192.168.1.105'
 DEBUGGER_PORT = 8000
 DEBUGGER_LINK = 'setinfo/'
+
+pose_matrix = None
 
 def cb_identifier(source, type, size, text):
   DEBUGGER_IP = str(source)
@@ -34,6 +36,12 @@ while 1:
 DEBUGGER_URL = 'http://'+DEBUGGER_IP+':'+str(DEBUGGER_PORT)+'/debug/'+DEBUGGER_LINK
 print ("Debugger link: " + DEBUGGER_URL)
 
+def sendDebugInfo(info):
+  try:
+    requests.post(DEBUGGER_URL, data = info)
+  except Exception as e:
+    print str(e)
+
 sp = None
 serial_types = ["COM", "/dev/ttyUSB", "/dev/ttyACM", "/dev/cu.usbmodem141"]
 serial_type = 3
@@ -44,7 +52,7 @@ while True:
     while True:
       try:
         sp = serial.Serial()
-        sp.baudrate = 115200
+        sp.baudrate = 9600
         sp.port = serial_types[serial_type] + str(serial_port)
         sp.open()
         print ('Connected to Arduino on serial')
@@ -61,6 +69,7 @@ while True:
         continue
       break
 
+    print ("here we go...")
     sp.flushInput()
     sp_buffer = bytearray([])
 
@@ -78,12 +87,11 @@ while True:
               info = str(sp_buffer[:i-1])
               info = info.split(',')
               if len(info) == 9:
-                mtx = [[float(info[0]), float(info[3]), float(info[6])],[float(info[1]), float(info[4]), float(info[7])],[float(info[2]), float(info[5]), float(info[8])]]
-                try:
-                  # send debugging info to debugger
-                  requests.post(DEBUGGER_URL, data = {'matrix':json.dumps(mtx)})
-                except Exception as e:
-                  print str(e)
+                mtx = [float(info[0]), float(info[3]), float(info[6]),float(info[1]), float(info[4]), float(info[7]),float(info[2]), float(info[5]), float(info[8])]
+                if pose_matrix == None:
+                  pose_matrix = mtx
+                  sendDebugInfo({'pose':json.dumps(pose_matrix)})
+                sendDebugInfo({'matrix':json.dumps(mtx)})
             sp_buffer = sp_buffer[i+1:]
         except Exception as e:
           print (str(e))

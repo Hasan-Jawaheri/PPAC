@@ -6,18 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>PPAC Debugger</title>
-    <script src="{% static "debug/js/jquery.js" %}"></script>
-
-    <!-- Bootstrap -->
-    <link href="{% static "debug/css/bootstrap.min.css" %}" rel="stylesheet" type="text/css" />
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="{% static "debug/js/bootstrap.min.js" %}"></script>
 
-    <script src="{% static "debug/js/script.js" %}"></script>
+    <!-- Bootstrap -->
+    <link href="{% static 'debug/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <script src="{% static 'debug/js/bootstrap.min.js' %}"></script>
+
+    <script src="{% static 'debug/js/script.js' %}"></script>
 </head>
 <body>
+    <script src="{% static 'debug/js/three.min.js' %}"></script>
+    <script src="{% static 'debug/js/js/renderers/Projector.js' %}"></script>
+    <script src="{% static 'debug/js/js/renderers/CanvasRenderer.js' %}"></script>
+    <script src="{% static 'debug/js/js/libs/stats.min.js' %}"></script>
 </body>
 </html>

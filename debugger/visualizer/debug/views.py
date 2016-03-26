@@ -9,16 +9,26 @@ def index(request):
 
 def getinfo(request):
   try:
-    return HttpResponse(json.dumps({'matrix': cache.get('mtx')}))
+    return HttpResponse(json.dumps({'matrix': cache.get('mtx'), 'pose': cache.get('pose')}))
   except:
     return HttpResponse("")
 
 @csrf_exempt
 def setinfo(request):
-  mtx = json.loads(request.POST["matrix"])
   try:
-    cache.set('mtx', mtx)
-  except:
-    cache.add('mtx', mtx)
+    mtx = json.loads(request.POST["matrix"])
+    try:
+      cache.set('mtx', mtx)
+    except:
+      cache.add('mtx', mtx)
+  except: pass
+
+  try:
+    pose = json.loads(request.POST["pose"])
+    try:
+      cache.set('pose', pose)
+    except:
+      cache.add('pose', pose)
+  except: pass
 
   return HttpResponse("ok")
