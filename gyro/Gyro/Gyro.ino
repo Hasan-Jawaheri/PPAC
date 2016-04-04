@@ -41,6 +41,9 @@ int SENSOR_SIGN[9] = {1,1,1,-1,-1,-1,1,1,1}; //Correct directions x,y,z - gyro, 
 
 #include <Wire.h>
 
+int trigPin = 22; // pin to send the sonar wave on
+int echoPin = 23; // pin to hear the sonar echo
+
 // LSM303 accelerometer: 8 g sensitivity
 // 3.9 mg/digit; 1 g = 256
 #define GRAVITY 256  //this equivalent to 1G in the raw data coming from the accelerometer 
@@ -141,6 +144,33 @@ float Temporary_Matrix[3][3]={
   ,{
     0,0,0  }
 };
+
+
+char buffer[128];
+int pos = 0;
+
+void ExecuteCommand (char* cmd) {
+  int l = strlen(cmd);
+  int num_commas = 0;
+  for (int i = 0; i < l; i++) {
+    if (cmd[i] == ',')
+      num_commas += 1;
+  }
+  if (num_commas == 5) {
+    int cur_pos = 0;
+    int motors[6];
+    int m = 0;
+    for (int i = 0; i <= l; i++) {
+      if (cmd[i] == ',' || cmd[i] == '\0') {
+        cmd[i] = '\0';
+        motors[m++] = atoi(&cmd[cur_pos]);
+        cur_pos = i + 1;
+      }
+    }
+    for (int i = 0; i < m; i++)
+      analogWrite(2+i, motors[i]);
+  }
+}
  
 void setup()
 { 
@@ -178,6 +208,9 @@ void setup()
   timer=millis();
   delay(20);
   counter=0;
+  
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
 }
 
 void loop() //Main Loop
@@ -210,8 +243,19 @@ void loop() //Main Loop
     Drift_correction();
     Euler_angles();
     // ***
-   
+
+    // read the distance from the sonar
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    duration = pulseIn(echoPin, HIGH);
+    int cm = duration / 29 / 2;
+       
     //printdata();
+    Serial.print(cm);
+    Serial.print(",");
     Serial.print(DCM_Matrix[0][0]);
     Serial.print (",");
     Serial.print(DCM_Matrix[0][1]);
@@ -231,5 +275,17 @@ void loop() //Main Loop
     Serial.print(DCM_Matrix[2][2]);
     Serial.print("\n");
   }
-   
+  
+  while (Serial.available() > 0) {
+    // read the bytes incoming from the serial port:
+    char c = Serial.read();
+    if ( pos > 126 )
+      pos = 0;
+    buffer[pos++] = c;
+    if ( c == '\n' ) {
+      buffer[pos-1] = '\0';
+      ExecuteCommand (buffer);
+      pos = 0;
+    }
+  }
 }

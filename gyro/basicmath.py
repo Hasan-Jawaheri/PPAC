@@ -16,7 +16,7 @@ def MtxInverse(mtx):
 
   invdet = 1.0 / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0)
 
-  out = [0] * 12
+  out = [0] * 16
 
   out[0+4*0] = ( mtx[1+4*1] * c5 - mtx[1+4*2] * c4 + mtx[1+4*3] * c3) * invdet
   out[0+4*1] = (-mtx[0+4*1] * c5 + mtx[0+4*2] * c4 - mtx[0+4*3] * c3) * invdet
@@ -41,7 +41,7 @@ def MtxInverse(mtx):
   return out
 
 def MtxMultiply(mtx1, mtx2):
-  out = [0] * 12
+  out = [0] * 16
   for x in range(0, 4):
     for y in range(0, 4):
       val = 0
@@ -54,4 +54,4 @@ def MtxVecMultiply(mtx, vec):
   out = []
   for i in range(0, 4):
     out += [mtx[0+4*i] * vec[0] + mtx[1+4*i] * vec[1] + mtx[2+4*i] * vec[2] + mtx[3+4*i] * vec[3]]
-  return out
+  return (out[0], out[1], out[2], out[3])
